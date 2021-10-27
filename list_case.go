@@ -29,7 +29,7 @@ const (
 // 	"clientTimeZoneId": "America/Los_Angeles"
 // }
 
-type CaseReqestParams struct {
+type CaseRequestParams struct {
 	Filters              []string `json:"filters"`
 	OnlyUnassigned       string   `json:"onlyUnassigned"`
 	OnlyOverDueCases     string   `json:"onlyOverDueCases"`
@@ -97,7 +97,7 @@ func (self *Client) SearchCase(ctx context.Context) (*CaseResp, error) {
 	return ret, nil
 }
 
-func (self *Client) ListCase(ctx context.Context, opt *CaseReqestParams) (*CaseResp, error) {
+func (self *Client) ListCase(ctx context.Context, opt *CaseRequestParams) (*CaseResp, error) {
 
 	if opt.PageSize <= 0 {
 		opt.PageSize = DEFAULT_LIST_PAGE_SIZE

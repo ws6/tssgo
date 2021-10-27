@@ -26,7 +26,7 @@ func getNewClient() *Client {
 
 func TestSearchCase(t *testing.T) {
 	client := getNewClient()
-	queryParam := new(CaseReqestParams)
+	queryParam := new(CaseRequestParams)
 	queryParam.SortByColumns = []string{`+createdDate`}
 	ctx, cancelFn := context.WithCancel(context.Background())
 	defer cancelFn()
@@ -38,7 +38,7 @@ func TestSearchCase(t *testing.T) {
 }
 func TestListCase(t *testing.T) {
 	client := getNewClient()
-	queryParam := new(CaseReqestParams)
+	queryParam := new(CaseRequestParams)
 	queryParam.ShowOverDueCases = true
 	queryParam.ShowUnspecifiedCases = true
 	// queryParam.PageSize = 5
