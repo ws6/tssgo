@@ -45,7 +45,7 @@ func (self *Client) SearchAuditLog(ctx context.Context, qp map[string]string) (*
 	if err != nil {
 		return nil, err
 	}
-	defer fmt.Println(string(body))
+
 	if resp.StatusCode != 200 {
 
 		return nil, fmt.Errorf(`bad status code-%d:%s`, resp.StatusCode, string(body))
