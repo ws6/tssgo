@@ -24,7 +24,7 @@ func getNewClient() *Client {
 	return ret
 }
 
-func TestSearchCase(t *testing.T) {
+func _TestSearchCase(t *testing.T) {
 	client := getNewClient()
 	queryParam := new(CaseRequestParams)
 	queryParam.SortByColumns = []string{`+createdDate`}
@@ -36,12 +36,12 @@ func TestSearchCase(t *testing.T) {
 	}
 	t.Logf(`%+v`, ret)
 }
-func TestListCase(t *testing.T) {
+func _TestListCase(t *testing.T) {
 	client := getNewClient()
 	queryParam := new(CaseRequestParams)
 	queryParam.ShowOverDueCases = true
 	queryParam.ShowUnspecifiedCases = true
-	// queryParam.PageSize = 5
+	queryParam.PageSize = 25
 	queryParam.SortByColumns = []string{`+createdDate`}
 	ctx, cancelFn := context.WithCancel(context.Background())
 	defer cancelFn()
@@ -51,4 +51,30 @@ func TestListCase(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	t.Logf(`%+v`, ret)
+
+	for _, found := range ret.Content {
+		t.Logf(`%+v`, found)
+	}
+
+}
+
+func TestSearchAuditLog(t *testing.T) {
+	client := getNewClient()
+	queryParam := make(map[string]string)
+	queryParam[`fromDate`] = `2021-10-25T14:12:06+0000`
+	queryParam[`orderBy`] = `-createdDate`
+
+	ctx, cancelFn := context.WithCancel(context.Background())
+	defer cancelFn()
+
+	ret, err := client.searchAuditLog(ctx, queryParam)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	t.Logf(`%+v`, ret)
+
+	for _, found := range ret.Content {
+		t.Logf(`%+v`, found)
+	}
+
 }

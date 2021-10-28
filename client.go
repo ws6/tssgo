@@ -82,13 +82,16 @@ func (self *Client) AttachHeaders(req *http.Request) {
 	if strings.HasPrefix(v, `apiKkey`) {
 		req.Header.Set(AUTH_TOKEN, `apiKkey`+" "+v)
 	}
+	//for compatible with als domain api
+	// https://tss-test.trusight.illumina.com/als/swagger-ui/index.html#/audit-log-controller/getAuditLogsUsingGET
+	req.Header.Set(`Authorization`, req.Header.Get(AUTH_TOKEN))
 
 }
 
 //NewRequestWithContext over write http.NewRequestWithContext wih auth headers
 func (self *Client) NewRequestWithContext(ctx context.Context, method, url string, body io.Reader) (*http.Response, error) {
 	absUrl := self.GetBaseUrl() + url
-	fmt.Println(absUrl)
+
 	req, err := http.NewRequestWithContext(ctx, method, absUrl, body)
 	if err != nil {
 		return nil, fmt.Errorf(`NewRequest:%s`, err.Error())
