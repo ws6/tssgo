@@ -67,7 +67,7 @@ func TestSearchAuditLog(t *testing.T) {
 	ctx, cancelFn := context.WithCancel(context.Background())
 	defer cancelFn()
 
-	ret, err := client.searchAuditLog(ctx, queryParam)
+	ret, err := client.SearchAuditLog(ctx, queryParam)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

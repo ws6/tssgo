@@ -22,7 +22,7 @@ import (
 //entityId
 //caseId
 
-func (self *Client) searchAuditLog(ctx context.Context, qp map[string]string) (*CaseResp, error) {
+func (self *Client) SearchAuditLog(ctx context.Context, qp map[string]string) (*CaseResp, error) {
 	_url := `/als/api/v1/auditlogs/search`
 	base, err := url.Parse(_url)
 	if err != nil {
