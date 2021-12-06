@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+
 	"net/url"
 )
 
@@ -22,7 +22,7 @@ import (
 //entityId
 //caseId
 
-func (self *Client) SearchAuditLog(ctx context.Context, qp map[string]string) (*CaseResp, error) {
+func (self *Client) SearchAuditLog(ctx context.Context, qp map[string]string) (*CaseListResp, error) {
 	_url := `/als/api/v1/auditlogs/search`
 	base, err := url.Parse(_url)
 	if err != nil {
@@ -34,24 +34,12 @@ func (self *Client) SearchAuditLog(ctx context.Context, qp map[string]string) (*
 	}
 	base.RawQuery = q.Encode()
 
-	resp, err := self.NewRequestWithContext(ctx, `GET`, base.String(), nil)
+	body, err := self.GetBytes(ctx, base.String())
 	if err != nil {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != 200 {
-
-		return nil, fmt.Errorf(`bad status code-%d:%s`, resp.StatusCode, string(body))
-	}
-
-	ret := new(CaseResp)
+	ret := new(CaseListResp)
 	if err := json.Unmarshal(body, ret); err != nil {
 		return nil, fmt.Errorf(`Unmarshal:%s`, err.Error())
 	}

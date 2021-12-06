@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 )
 
 const (
@@ -42,7 +43,7 @@ type CaseRequestParams struct {
 	PhiTypes             []string `json:"phiTypes,omitempty"`
 }
 
-type CaseResp struct {
+type CaseListResp struct {
 	Content []map[string]interface{} `json:"content"`
 	// Pageable struct {
 	// 	Sort struct {
@@ -64,40 +65,80 @@ type CaseResp struct {
 		Unsorted bool `json:"unsorted"`
 		Empty    bool `json:"empty"`
 	} `json:"sort"`
-	Size   int  `json:"size"`
-	Number int  `json:"number"`
-	First  bool `json:"first"`
-	Empty  bool `json:"empty"`
+	Size             int  `json:"size"`
+	Number           int  `json:"number"`
+	NumberOfElements int  `json:"numberOfElements"`
+	First            bool `json:"first"`
+	Empty            bool `json:"empty"`
 }
 
-func (self *Client) SearchCase(ctx context.Context) (*CaseResp, error) {
-	url := `/crs/api/v2/cases/search?subState=READY_FOR_INTERPRETATION`
+//SearchCaseByListAPI an internal API found in TSS UI only. it is not documented
+//https://icsl-test.trusight.illumina.com/crs/api/v1/cases/list/search?searchTerm=internal-sample-id123&pageNumber=17&orderBy=ASC&pageSize=1
+func (self *Client) SearchCaseByListAPI(ctx context.Context, params map[string]string) (*CaseListResp, error) {
+	_url := `/crs/api/v1/cases/list/search`
 
-	resp, err := self.NewRequestWithContext(ctx, `GET`, url, nil)
+	base, err := url.Parse(_url)
+	if err != nil {
+
+		return nil, err
+	}
+	q := url.Values{}
+
+	for k, v := range params {
+		q.Add(k, v)
+	}
+
+	base.RawQuery = q.Encode()
+
+	resp, err := self.NewRequestWithContext(ctx, `POST`, base.String(), nil)
+
 	if err != nil {
 		return nil, err
 	}
-
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-
-	if resp.StatusCode != 200 {
-
-		return nil, fmt.Errorf(`bad status code-%d:%s`, resp.StatusCode, string(body))
-	}
-
-	ret := new(CaseResp)
+	ret := new(CaseListResp)
 	if err := json.Unmarshal(body, ret); err != nil {
 		return nil, fmt.Errorf(`Unmarshal:%s`, err.Error())
 	}
 	return ret, nil
 }
 
-func (self *Client) ListCase(ctx context.Context, opt *CaseRequestParams) (*CaseResp, error) {
+//SearchCase supported v2 search parameters
+// https://icsl-test.trusight.illumina.com/crs/swagger-ui/index.html#/Cases/searchCasesUsingGET
+func (self *Client) SearchCase(ctx context.Context, params map[string]string) (*CaseListResp, error) {
+	_url := `/crs/api/v2/cases/search`
+
+	base, err := url.Parse(_url)
+	if err != nil {
+
+		return nil, err
+	}
+	q := url.Values{}
+
+	for k, v := range params {
+		q.Add(k, v)
+	}
+
+	base.RawQuery = q.Encode()
+
+	resp, err := self.GetBytes(ctx, base.String())
+	if err != nil {
+		return nil, err
+	}
+
+	ret := new(CaseListResp)
+	if err := json.Unmarshal(resp, ret); err != nil {
+		return nil, fmt.Errorf(`Unmarshal:%s`, err.Error())
+	}
+	return ret, nil
+}
+
+func (self *Client) ListCase(ctx context.Context, opt *CaseRequestParams) (*CaseListResp, error) {
 
 	if opt.PageSize <= 0 {
 		opt.PageSize = DEFAULT_LIST_PAGE_SIZE
@@ -125,7 +166,7 @@ func (self *Client) ListCase(ctx context.Context, opt *CaseRequestParams) (*Case
 		return nil, fmt.Errorf(`bad status code-%d:%s`, resp.StatusCode, string(body))
 	}
 
-	ret := new(CaseResp)
+	ret := new(CaseListResp)
 	if err := json.Unmarshal(body, ret); err != nil {
 		return nil, fmt.Errorf(`Unmarshal:%s`, err.Error())
 	}
