@@ -21,4 +21,6 @@ type AddressItemResp struct {
 	AddressLine2    string `json:"addressLine2"`
 	City            string `json:"city"`
 	Region          string `json:"region"`
+	PostalCode      string `json:"postalCode"`
+	Country         string `json:"country"`
 }
