@@ -29,9 +29,12 @@ func (self *Client) SearchAuditLog(ctx context.Context, qp map[string]string) (*
 		return nil, err
 	}
 	q := url.Values{}
-	for k, v := range qp {
-		q.Add(k, v)
+	if qp != nil {
+		for k, v := range qp {
+			q.Add(k, v)
+		}
 	}
+
 	base.RawQuery = q.Encode()
 
 	body, err := self.GetBytes(ctx, base.String())
@@ -45,5 +48,4 @@ func (self *Client) SearchAuditLog(ctx context.Context, qp map[string]string) (*
 	}
 	return ret, nil
 
-	return nil, nil
 }
