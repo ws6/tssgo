@@ -36,7 +36,7 @@ func TestGetCaseByIdWithPHI(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-
+	t.Logf("%+v\n", ret.Client)
 	for _, csj := range ret.CaseSubjects {
 		t.Logf("%+v\n", csj.Subject) //patient information
 	}

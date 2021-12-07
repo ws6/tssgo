@@ -75,7 +75,7 @@ type CaseResp struct {
 		DateReceived       string `json:"dateReceived"`
 		DateCollected      string `json:"dateCollected"`
 		SampleSourceType   string `json:"sampleSourceType"`
-	} `json:"client"`
+	} `json:"activeSample"`
 	TestDefinition struct {
 		Name    string `json:"name"`
 		Type    string `json:"type"`
