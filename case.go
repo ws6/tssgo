@@ -173,8 +173,6 @@ func (self *Client) GetCasesSearchChan(ctx context.Context, params map[string]st
 				return
 			}
 
-			fmt.Println(`SearchCase resp`, resp)
-
 			for _, item := range resp.Content {
 				topush, err := msiToCaseResp(item)
 				if err != nil {
