@@ -238,11 +238,10 @@ func (self *Client) GetCasesSearchBySearchTerm(ctx context.Context, searchTerm s
 
 func (self *Client) SearchCaseByExternalSampleId(ctx context.Context, externalSampleId string) chan *CaseResp {
 
-	st := `internal-sample-id123`
 	stFn := func(c *CaseResp) bool {
 		for _, csj := range c.CaseSubjects {
 			for _, sample := range csj.Samples {
-				if sample.ExternalSampleId == st {
+				if sample.ExternalSampleId == externalSampleId {
 					return true
 				}
 			}
@@ -252,5 +251,5 @@ func (self *Client) SearchCaseByExternalSampleId(ctx context.Context, externalSa
 		return false
 	}
 
-	return self.GetCasesSearchBySearchTerm(ctx, st, stFn)
+	return self.GetCasesSearchBySearchTerm(ctx, externalSampleId, stFn)
 }
