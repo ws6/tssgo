@@ -25,8 +25,23 @@ func getNewClient() *Client {
 	return ret
 }
 
+func TestCompleteCaseStatus(t *testing.T) {
+	client := getNewClient()
+
+	ctx, cancelFn := context.WithCancel(context.Background())
+	defer cancelFn()
+	caseId := `eb0370fd-2dd8-4f20-968d-3a5e55e2998f`
+	err := client.CloseCaseWithCompletedTimeNow(ctx,
+		caseId,
+	)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+}
+
 //GetCaseByIdWithPHI
-func TestGetCaseByIdWithPHI(t *testing.T) {
+func _TestGetCaseByIdWithPHI(t *testing.T) {
 	client := getNewClient()
 
 	ctx, cancelFn := context.WithCancel(context.Background())

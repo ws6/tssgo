@@ -4,8 +4,21 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/url"
 	"strconv"
+	"strings"
+	"time"
+)
+
+const (
+	CASE_STATUS_IN_PROGRESS             = `In Progress`
+	CASE_STATUS_COMPLETE                = `Complete`
+	CASE_SUB_STATE_CLOSED               = `CLOSED`
+	CASE_SUB_STATE_DELIVERED            = `DELIVERED`
+	CASE_SUB_STATE_DELIVERY_IN_PROGRESS = `DELIVERY_IN_PROGRESS`
+	CASE_SUB_STATE_READY_FOR_DELIVERY   = `READY_FOR_DELIVERY `
+	CASE_SUB_STATE_READY_HAS_ISSUE      = `HAS_ISSUE `
 )
 
 var ERR_NOT_FOUND = fmt.Errorf(`not found`)
@@ -252,4 +265,61 @@ func (self *Client) SearchCaseByExternalSampleId(ctx context.Context, externalSa
 	}
 
 	return self.GetCasesSearchBySearchTerm(ctx, externalSampleId, stFn)
+}
+
+func (self *Client) UpdateCaseStatusAndSubStatus(ctx context.Context, caseId, status, subState string) error {
+	url := fmt.Sprintf(`/crs/api/v1/cases/%s/status`, caseId)
+	body := fmt.Sprintf(`{
+		"status":"%s",
+		"subState":"%s"
+	}`,
+		status,
+		subState,
+	)
+	resp, err := self.NewRequestWithContext(ctx, `POST`, url, strings.NewReader(body))
+	if err != nil {
+		return err
+	}
+	ebody, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(ebody))
+	if resp.StatusCode != 200 {
+
+		return fmt.Errorf(`wrong status code:%d`, resp.StatusCode)
+	}
+	return nil
+}
+
+//CloseCase close case from new
+// https://jira.illumina.com/browse/OLYM-16130
+//!!! in 2.6 TSS only. there is a limitation only appy to case status is New
+
+func (self *Client) CloseCase(ctx context.Context, caseId string, body []byte) error {
+	url := fmt.Sprintf(`/crs/api/v1/cases/%s/complete`, caseId)
+	resp, err := self.NewRequestWithContext(ctx, `POST`, url, strings.NewReader(string(body)))
+	if err != nil {
+		return err
+	}
+	ebody, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(ebody))
+	if resp.StatusCode != 200 {
+
+		return fmt.Errorf(`wrong status code:%d`, resp.StatusCode)
+	}
+	return nil
+}
+
+func (self *Client) CloseCaseWithCompletedTime(ctx context.Context, caseId string, t time.Time) error {
+	javaTimeFormatter := `2006-01-02T15:04:05.000Z`
+
+	body := fmt.Sprintf(`
+	{
+		"completedDate":"%s"
+	}
+	`, t.Format(javaTimeFormatter))
+	return self.CloseCase(ctx, caseId, []byte(body))
+}
+
+func (self *Client) CloseCaseWithCompletedTimeNow(ctx context.Context, caseId string) error {
+	//TSS might be using UTC
+	return self.CloseCaseWithCompletedTime(ctx, caseId, time.Now().UTC())
 }
