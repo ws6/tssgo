@@ -42,10 +42,11 @@ type CaseResp struct {
 	Status             string      `json:"status"`
 	SubState           string      `json:"subState"`
 	CaseSubjects       []struct {
-		Phenotypes  []map[string]string `json:"phenotypes"`
-		ReportTypes []map[string]string `json:"reportTypes"`
-		Subject     map[string]string   `json:"subject"`
-		Samples     []struct {
+		Phenotypes            []map[string]string `json:"phenotypes"`
+		ReportTypes           []map[string]string `json:"reportTypes"`
+		Subject               map[string]string   `json:"subject"`
+		RelationshipToProband string              `json:"relationshipToProband"`
+		Samples               []struct {
 			CreatedDate        string `json:"createdDate"`
 			UpdatedDate        string `json:"updatedDate"`
 			Id                 string `json:"id"`

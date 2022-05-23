@@ -25,7 +25,7 @@ func getNewClient() *Client {
 	return ret
 }
 
-func TestCompleteCaseStatus(t *testing.T) {
+func _TestCompleteCaseStatus(t *testing.T) {
 	client := getNewClient()
 
 	ctx, cancelFn := context.WithCancel(context.Background())
@@ -41,19 +41,19 @@ func TestCompleteCaseStatus(t *testing.T) {
 }
 
 //GetCaseByIdWithPHI
-func _TestGetCaseByIdWithPHI(t *testing.T) {
+func TestGetCaseByIdWithPHI(t *testing.T) {
 	client := getNewClient()
 
 	ctx, cancelFn := context.WithCancel(context.Background())
 	defer cancelFn()
-	caseId := `a0c26f99-8bfb-42f7-97c6-9348babc26b9`
+	caseId := `142eea4c-3f2d-4e85-bbaf-567298f0df57`
 	ret, err := client.GetCaseByIdWithPHI(ctx, caseId)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 	t.Logf("%+v\n", ret.Client)
 	for _, csj := range ret.CaseSubjects {
-		t.Logf("%+v\n", csj.Subject) //patient information
+		t.Logf("%+v\n", csj) //patient information
 	}
 
 }
@@ -108,6 +108,7 @@ func _TestListCase(t *testing.T) {
 	t.Logf(`%+v`, ret)
 
 	for _, found := range ret.Content {
+
 		t.Logf(`%+v`, found)
 	}
 
@@ -117,7 +118,7 @@ func _TestSearchAuditLog(t *testing.T) {
 	client := getNewClient()
 	queryParam := make(map[string]string)
 	queryParam[`fromDate`] = `2021-10-25T14:12:06+0000`
-	queryParam[`orderBy`] = `-createdDate`
+	queryParam[`orderBy`] = `+createdDate`
 
 	ctx, cancelFn := context.WithCancel(context.Background())
 	defer cancelFn()
