@@ -34,14 +34,22 @@ type CaseResp struct {
 	UpdatedDate        string      `json:"updatedDate"`
 	ClientId           string      `json:"clientId"`
 	ClientAddressId    string      `json:"clientAddressId"`
-	ClientRecipientIds string      `json:"clientRecipientIds"`
+	ClientRecipientIds []string    `json:"clientRecipientIds"`
 	Client             *ClientResp `json:"client"`
 	StartDate          string      `json:"startDate"`
 	DueDate            string      `json:"dueDate"`
 	CompletedDate      string      `json:"completedDate"`
 	Status             string      `json:"status"`
 	SubState           string      `json:"subState"`
-	CaseSubjects       []struct {
+	Tags               []string    `json:"tags"`
+	Analysis           []struct {
+		Id              string  `json:"id"`
+		CreatedDate     string  `json:"createdDate"`
+		Status          string  `json:"status"`
+		Message         *string `json:"message"`
+		AnalysisRunType string  `json:"analysisRunType"`
+	} `json:"analysis"`
+	CaseSubjects []struct {
 		Phenotypes            []map[string]string `json:"phenotypes"`
 		ReportTypes           []map[string]string `json:"reportTypes"`
 		Subject               map[string]string   `json:"subject"`

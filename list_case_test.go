@@ -2,6 +2,7 @@ package tssgo
 
 import (
 	"context"
+	"encoding/json"
 
 	"os"
 	"testing"
@@ -25,12 +26,37 @@ func getNewClient() *Client {
 	return ret
 }
 
+type AnalysisResp struct {
+	FormatVersion string `json:"formatVersion"`
+	//...more here
+}
+
+func _TestGetAnalysisMetrics(t *testing.T) {
+	client := getNewClient()
+
+	ctx, cancelFn := context.WithCancel(context.Background())
+	defer cancelFn()
+	_url := `/cfs/api/v1/analysis/fwb.252d7815a24d4fb08809xxxfe/qc`
+	body, err := client.GetBytes(ctx, _url)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	ret := new(AnalysisResp)
+	if err := json.Unmarshal(body, ret); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	t.Log(string(body))
+	t.Logf("%+v\n", ret)
+
+}
+
 func _TestCompleteCaseStatus(t *testing.T) {
 	client := getNewClient()
 
 	ctx, cancelFn := context.WithCancel(context.Background())
 	defer cancelFn()
-	caseId := `eb0370fd-2dd8-4f20-968d-3a5e55e2998f`
+	caseId := `eb0370fd-2dd8-4f20-968d-xxx`
 	err := client.CloseCaseWithCompletedTimeNow(ctx,
 		caseId,
 	)
@@ -46,12 +72,14 @@ func TestGetCaseByIdWithPHI(t *testing.T) {
 
 	ctx, cancelFn := context.WithCancel(context.Background())
 	defer cancelFn()
-	caseId := `142eea4c-3f2d-4e85-bbaf-567298f0df57`
+	caseId := `c7e68e6c-aae3-4a3e-a48f-xxx`
 	ret, err := client.GetCaseByIdWithPHI(ctx, caseId)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	t.Logf("%+v\n", ret.Client)
+	body, _ := json.MarshalIndent(ret, "", "  ")
+	t.Log(string(body))
+	return
 	for _, csj := range ret.CaseSubjects {
 		t.Logf("%+v\n", csj) //patient information
 	}
