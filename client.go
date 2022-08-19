@@ -7,6 +7,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -36,6 +38,24 @@ func requiredKeys() []string {
 	}
 }
 
+func getTimeoutSeconds(cfg map[string]string) int {
+	//from config
+	if s, ok := cfg[`TSSGO_TIMEOUT_SECOND`]; ok {
+		if n, err := strconv.Atoi(s); err == nil && n > 0 {
+			return n
+		}
+	}
+	//from env
+	if s := os.Getenv(`TSSGO_TIMEOUT_SECOND`); s != "" {
+		if n, err := strconv.Atoi(s); err == nil && n > 0 {
+			return n
+		}
+	}
+
+	//from default
+	return DEFAULT_TIMEOUT_SECOND
+}
+
 func NewClient(cfg map[string]string) (*Client, error) {
 	ret := new(Client)
 	ret.cfg = cfg
@@ -50,7 +70,7 @@ func NewClient(cfg map[string]string) (*Client, error) {
 
 	ret.httpclient = new(http.Client)
 	//you can use GetHttpClient then set the client paramters
-	ret.httpclient.Timeout = time.Second * time.Duration(DEFAULT_TIMEOUT_SECOND)
+	ret.httpclient.Timeout = time.Second * time.Duration(getTimeoutSeconds(cfg))
 	return ret, nil
 }
 

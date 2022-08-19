@@ -67,7 +67,7 @@ func _TestCompleteCaseStatus(t *testing.T) {
 }
 
 //GetCaseByIdWithPHI
-func TestGetCaseByIdWithPHI(t *testing.T) {
+func _TestGetCaseByIdWithPHI(t *testing.T) {
 	client := getNewClient()
 
 	ctx, cancelFn := context.WithCancel(context.Background())
@@ -142,7 +142,7 @@ func _TestListCase(t *testing.T) {
 
 }
 
-func _TestSearchAuditLog(t *testing.T) {
+func TestSearchAuditLog(t *testing.T) {
 	client := getNewClient()
 	queryParam := make(map[string]string)
 	queryParam[`fromDate`] = `2021-10-25T14:12:06+0000`
