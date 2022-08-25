@@ -14,6 +14,7 @@ import (
 )
 
 //illumina tss golang client
+// https://support-docs.illumina.com/SW/TruSight_SW_API/Content/SW/FrontPages/TruSightSoftware_API.htm
 //http://support-docs.illumina.com/SW/TSSS/TruSight_SW_API/Content/SW/FrontPages/TruSightSoftware_API.htm
 type Client struct {
 	cfg        map[string]string

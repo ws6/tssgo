@@ -31,6 +31,20 @@ type AnalysisResp struct {
 	//...more here
 }
 
+func TestGetReport(t *testing.T) {
+	client := getNewClient()
+
+	ctx, cancelFn := context.WithCancel(context.Background())
+	defer cancelFn()
+	caseId := `5d17ee9a-d514-4e03-bfd9-de30c08fdbf6`
+	res, err := client.GetRerpotJsonContentByCaseId(ctx, caseId)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	t.Logf("%s\n", res)
+
+}
+
 func _TestGetAnalysisMetrics(t *testing.T) {
 	client := getNewClient()
 
@@ -142,7 +156,7 @@ func _TestListCase(t *testing.T) {
 
 }
 
-func TestSearchAuditLog(t *testing.T) {
+func _TestSearchAuditLog(t *testing.T) {
 	client := getNewClient()
 	queryParam := make(map[string]string)
 	queryParam[`fromDate`] = `2021-10-25T14:12:06+0000`
