@@ -3,6 +3,7 @@ package tssgo
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
 
 	"os"
 	"testing"
@@ -31,7 +32,32 @@ type AnalysisResp struct {
 	//...more here
 }
 
-func TestGetReport(t *testing.T) {
+func TestGetReportType(t *testing.T) {
+	testFile := `corrected_report.json` //must run test within same dir
+	body, err := ioutil.ReadFile(testFile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	report := new(Report)
+	if err := json.Unmarshal(body, report); err != nil {
+		t.Fatal(err.Error())
+	}
+	samples := []string{}
+	for _, c := range report.CaseSubjects {
+		for _, s := range c.Samples {
+			samples = append(samples, s.SampleName)
+		}
+	}
+	for _, s := range samples {
+		rt := GetFirstReportType(report, s)
+		t.Log(s, rt)
+
+	}
+
+}
+
+func _TestGetReport(t *testing.T) {
 	client := getNewClient()
 
 	ctx, cancelFn := context.WithCancel(context.Background())

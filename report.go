@@ -44,3 +44,37 @@ func (self *Client) GetRerpotJsonContentByCaseId(ctx context.Context, caseId str
 	return nil, fmt.Errorf(`no jsonContent`)
 
 }
+func (self *Client) GetRerpotJsonSpecsContentByCaseId(ctx context.Context, caseId string) (*Report, error) {
+	res, err := self.GetRerpotJsonContentByCaseId(ctx, caseId)
+	if err != nil {
+		return nil, fmt.Errorf(`GetRerpotJsonContentByCaseId:%s`, err.Error())
+	}
+	body, err := json.Marshal(res)
+	if err != nil {
+		return nil, err
+	}
+	ret := new(Report)
+
+	if err := json.Unmarshal(body, ret); err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+//GetReportType get the first report type is not null
+func GetFirstReportType(report *Report, sampleName string) string {
+	for _, c := range report.CaseSubjects {
+		for _, sample := range c.Samples {
+			for _, r := range sample.ReportTypes {
+				if sample.SampleName != sampleName {
+					continue
+				}
+				if r.ReportDetails.EditStatus != "" {
+					return r.ReportDetails.EditStatus //!!!if there is multiple report  EditStatus for same sample would be a mess
+				}
+			}
+		}
+	}
+	return ""
+}
